@@ -8,7 +8,21 @@
 
 import SwiftUI
 
+struct Shaper : View {
+    let isCircle : Bool
+    var body: some View {
+        return ZStack {
+            if isCircle {
+                Capsule()
+            } else {
+                Rectangle()
+            }
+        }
+    }
+}
+
 struct ContentView: View {
+    @State private var isCircle = false
     // how far the circle has been dragged
     @State private var offset = CGSize.zero
 
@@ -23,6 +37,7 @@ struct ContentView: View {
                 withAnimation {
                     self.offset = .zero
                     self.isDragging = false
+                    self.isCircle.toggle()
                 }
             }
 
@@ -38,8 +53,9 @@ struct ContentView: View {
         let combined = pressGesture.sequenced(before: dragGesture)
 
         // a 64x64 circle that scales up when it's dragged, sets its offset to whatever we had back from the drag gesture, and uses our combined gesture
-        return Circle()
-            .fill(Color.red)
+        return Shaper(isCircle: isCircle)
+            //.fill(Color.red)
+            .foregroundColor(.blue)
             .frame(width: 64, height: 64)
             .scaleEffect(isDragging ? 1.5 : 1)
             .offset(offset)
