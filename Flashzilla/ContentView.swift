@@ -9,10 +9,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+    @State private var scale: CGFloat = 1
+    
     var body: some View {
-        Text("hello world ")
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { time in
-                print("moving to the background")
+        Text("Hello, World!")
+            .scaleEffect(scale)
+            .onTapGesture {
+                self.withOptionalAnimation {
+                    self.scale *= 1.5
+                }
+        }
+        
+    }
+    
+    func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
+        if UIAccessibility.isReduceMotionEnabled {
+            return try body()
+        } else {
+            return try withAnimation(animation, body)
         }
     }
 }
