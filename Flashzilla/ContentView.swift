@@ -13,14 +13,7 @@ struct ContentView: View {
     @State private var scale: CGFloat = 1
     
     var body: some View {
-        Text("Hello, World!")
-            .scaleEffect(scale)
-            .onTapGesture {
-                self.withOptionalAnimation {
-                    self.scale *= 1.5
-                }
-        }
-        
+        CardView(card: Card.example)
     }
     
     func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
