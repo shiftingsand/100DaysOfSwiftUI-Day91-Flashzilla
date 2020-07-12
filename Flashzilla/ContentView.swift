@@ -16,19 +16,27 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             Image("background")
-            .resizable()
-            .scaledToFill()
-            .edgesIgnoringSafeArea(.all)
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
             
             VStack {
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: self.cards[index])
-                            .stacked(at: index, in: self.cards.count)
+                        CardView(card: self.cards[index]) {
+                            withAnimation {
+                                self.removeCard(at: index)
+                            }
+                        }
+                        .stacked(at: index, in: self.cards.count)
                     }
                 }
             }
         }
+    }
+    
+    func removeCard(at index : Int) {
+        cards.remove(at: index)
     }
 }
 
