@@ -11,16 +11,23 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State private var scale: CGFloat = 1
+    @State private var cards = [Card](repeating: Card.example, count: 10)
     
     var body: some View {
-        CardView(card: Card.example)
-    }
-    
-    func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
-        if UIAccessibility.isReduceMotionEnabled {
-            return try body()
-        } else {
-            return try withAnimation(animation, body)
+        ZStack {
+            Image("background")
+            .resizable()
+            .scaledToFill()
+            .edgesIgnoringSafeArea(.all)
+            
+            VStack {
+                ZStack {
+                    ForEach(0..<cards.count, id: \.self) { index in
+                        CardView(card: self.cards[index])
+                            .stacked(at: index, in: self.cards.count)
+                    }
+                }
+            }
         }
     }
 }
@@ -28,5 +35,12 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+extension View {
+    func stacked(at position: Int, in total: Int) -> some View {
+        let offset = CGFloat(total - position)
+        return self.offset(CGSize(width: 0, height: offset * 10))
     }
 }
