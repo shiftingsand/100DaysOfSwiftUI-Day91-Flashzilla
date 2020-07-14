@@ -15,45 +15,46 @@ struct ContentView: View {
     @State private var cards = [Card](repeating: Card.example, count: 10)
     
     var body: some View {
-        ZStack {
-            Image("background")
-                .resizable()
-                .scaledToFill()
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                ZStack {
-                    ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: self.cards[index]) {
-                            withAnimation {
-                                self.removeCard(at: index)
+        GeometryReader { geo in  // not in lesson
+            ZStack {
+                Image("background")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    ZStack {
+                        ForEach(0..<self.cards.count, id: \.self) { index in
+                            CardView(card: self.cards[index]) {
+                                withAnimation {
+                                    self.removeCard(at: index)
+                                }
                             }
+                            .stacked(at: index, in: self.cards.count)
                         }
-                        .stacked(at: index, in: self.cards.count)
                     }
                 }
-            }
-            
-            if differentiateWithoutColor {
-                VStack {
-                    Spacer()
-
-                    HStack {
-                        Spacer()  // not in lesson
-                        Image(systemName: "xmark.circle")
-                            .padding()
-                            .background(Color.black.opacity(0.7))
-                            .clipShape(Circle())
+                
+                if self.differentiateWithoutColor {
+                    VStack {
                         Spacer()
-                        Image(systemName: "checkmark.circle")
-                            .padding()
-                            .background(Color.black.opacity(0.7))
-                            .clipShape(Circle())
-                        Spacer() // not in lesson
+                        HStack {
+                            Image(systemName: "xmark.circle")
+                                .padding()
+                                .background(Color.black.opacity(0.7))
+                                .clipShape(Circle())
+                            Spacer()
+                            Image(systemName: "checkmark.circle")
+                                .padding()
+                                .background(Color.black.opacity(0.7))
+                                .clipShape(Circle())
+                        }
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .padding()
+                        
                     }
-                    .foregroundColor(.white)
-                    .font(.largeTitle)
-                    .padding()
+                    .frame(width: geo.size.width) // not in lesson
                 }
             }
         }
