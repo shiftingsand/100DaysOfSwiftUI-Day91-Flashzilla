@@ -9,19 +9,23 @@
 import SwiftUI
 import CoreHaptics
 
-let startingTime = 15
+let startingTime = 100
 
 struct ContentView: View {
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State private var showingEditScreen = false
+    @State private var showingSettingsScreen = false
     @State private var scale: CGFloat = 1
     @State private var cards = [Card]()
+    @State private var badAnswer : Card? = nil
     @State private var timeRemaining = startingTime
     @State private var isActive = true
     @State private var scaleAmount : CGFloat = 1
     @State private var engine: CHHapticEngine?
+    //@State private var newCards = false
+    @State var retryFailures = true
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -48,15 +52,17 @@ struct ContentView: View {
 
                     ZStack {
                         ForEach(0..<self.cards.count, id: \.self) { index in
-                            CardView(card: self.cards[index]) {
+                            CardView(card: self.cards[index], retryFailures: self.$retryFailures) {
                                 withAnimation {
                                     self.removeCard(at: index)
                                 }
                             }
                             .stacked(at: index, in: self.cards.count)
+                                // snippy fix this
                             .allowsHitTesting(index == self.cards.count - 1)
                             .accessibility(hidden: index < self.cards.count - 1)
                         }
+                        #warning("fix above")
                     }
                     .allowsHitTesting(self.timeRemaining > 0)
                     
@@ -74,12 +80,27 @@ struct ContentView: View {
                         Spacer()
                         
                         Button(action: {
+                            self.showingSettingsScreen = true
+                        }) {
+                            Image(systemName: "gear")
+                                .padding()
+                                .background(Color.black.opacity(0.7))
+                                .clipShape(Circle())
+                        }
+                        .sheet(isPresented: self.$showingSettingsScreen) {
+                                              Settings(retryFailures: self.$retryFailures)
+                                      }
+                        
+                        Button(action: {
                             self.showingEditScreen = true
                         }) {
                             Image(systemName: "plus.circle")
                                 .padding()
                                 .background(Color.black.opacity(0.7))
                                 .clipShape(Circle())
+                        }
+                        .sheet(isPresented: self.$showingEditScreen, onDismiss: self.resetCards) {
+                            EditCards()
                         }
                     }
                     
@@ -131,13 +152,14 @@ struct ContentView: View {
             }
             .onReceive(self.timer) { time in
                 guard self.isActive else { return }
+                //print(self.retryFailures)
                 if self.timeRemaining > 0 {
                     self.timeRemaining -= 1
                     // day 91 - challenge 1. added custom haptic
                     if 0 == self.timeRemaining {
                         self.timesUpShake()
                     } else if 1 == self.timeRemaining {
-                        prepareHaptics()
+                        self.prepareHaptics()
                     }
                 } else {
                     // day 91 - challenge 1. animation for time's up
@@ -152,17 +174,23 @@ struct ContentView: View {
                     self.isActive = true
                 }
             }
-            .sheet(isPresented: self.$showingEditScreen, onDismiss: self.resetCards) {
-                EditCards()
-            }
             .onAppear(perform: self.resetCards)
         }
     }
     
     func removeCard(at index : Int) {
         guard index >= 0 else { return }
+        let tempCard = Card(prompt: cards[index].prompt, answer: cards[index].answer)
         
         cards.remove(at: index)
+        
+        if true == retryFailures {
+            cards.insert(tempCard, at: 0)
+            //newCards.toggle()
+            print("cards is now \(cards)")
+        } else {
+            print("no retry")
+        }
         
         if cards.isEmpty {
             isActive = false
@@ -174,6 +202,7 @@ struct ContentView: View {
         timeRemaining = startingTime
         isActive = true
         loadData()
+        print("reset \(cards)")
     }
     
     func loadData() {

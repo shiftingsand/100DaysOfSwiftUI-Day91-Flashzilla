@@ -16,6 +16,7 @@
 		96EF35BC24B68BFF00EC706C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 96EF35BB24B68BFF00EC706C /* Preview Assets.xcassets */; };
 		96EF35BF24B68BFF00EC706C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 96EF35BD24B68BFF00EC706C /* LaunchScreen.storyboard */; };
 		96F1F68E24BFC25500BC6B00 /* EditCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F1F68D24BFC25500BC6B00 /* EditCards.swift */; };
+		96F1F69024C0BB5100BC6B00 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F1F68F24C0BB5100BC6B00 /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		96EF35BE24B68BFF00EC706C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		96EF35C024B68BFF00EC706C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96F1F68D24BFC25500BC6B00 /* EditCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCards.swift; sourceTree = "<group>"; };
+		96F1F68F24C0BB5100BC6B00 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +48,7 @@
 		96EF35A624B68BFC00EC706C = {
 			isa = PBXGroup;
 			children = (
+				96F1F68F24C0BB5100BC6B00 /* Settings.swift */,
 				96EF35B124B68BFC00EC706C /* Flashzilla */,
 				96EF35B024B68BFC00EC706C /* Products */,
 			);
@@ -159,6 +162,7 @@
 				96EF35B524B68BFC00EC706C /* SceneDelegate.swift in Sources */,
 				96EF35B724B68BFC00EC706C /* ContentView.swift in Sources */,
 				96F1F68E24BFC25500BC6B00 /* EditCards.swift in Sources */,
+				96F1F69024C0BB5100BC6B00 /* Settings.swift in Sources */,
 				960B0BB324BBBD3D0063E515 /* Card.swift in Sources */,
 				960B0BB524BBC1FD0063E515 /* CardView.swift in Sources */,
 			);

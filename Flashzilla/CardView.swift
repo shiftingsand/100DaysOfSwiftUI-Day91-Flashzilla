@@ -12,6 +12,7 @@ struct CardView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
     let card: Card
+    @Binding var retryFailures : Bool
     var removal: (() -> Void)? = nil
     @State private var feedback = UINotificationFeedbackGenerator()
     @State private var isShowingAnswer = false
@@ -75,6 +76,13 @@ struct CardView: View {
                     }
                     
                     self.removal?()
+                    
+                    // day 91 - challenge 2
+                    // i think this is key. we need to put back the card if we're going to retry.
+                    if true == self.retryFailures {
+                        print("putting the card back for retries")
+                        self.offset = .zero
+                    }
                 } else {
                     self.offset = .zero
                 }
@@ -89,6 +97,6 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        CardView(card: Card.example)
+        CardView(card: Card.example, retryFailures: .constant(true))
     }
 }
