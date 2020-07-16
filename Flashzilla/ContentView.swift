@@ -26,6 +26,7 @@ struct ContentView: View {
     @State private var engine: CHHapticEngine?
     //@State private var newCards = false
     @State var retryFailures = true
+    @State var lastAnswerCorrect = false
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -52,7 +53,7 @@ struct ContentView: View {
 
                     ZStack {
                         ForEach(0..<self.cards.count, id: \.self) { index in
-                            CardView(card: self.cards[index], retryFailures: self.$retryFailures) {
+                            CardView(card: self.cards[index], retryFailures: self.$retryFailures, lastAnswerCorrect: self.$lastAnswerCorrect) {
                                 withAnimation {
                                     self.removeCard(at: index)
                                 }
@@ -184,12 +185,13 @@ struct ContentView: View {
         
         cards.remove(at: index)
         
-        if true == retryFailures {
+        // day 91 - challenge 2. if it's a wrong answer and we're retrying then put the card back.
+        if true == retryFailures && false == lastAnswerCorrect {
             cards.insert(tempCard, at: 0)
             //newCards.toggle()
-            print("cards is now \(cards)")
+            print("bad answer. cards is now \(cards)")
         } else {
-            print("no retry")
+            print("no retry or answer was right")
         }
         
         if cards.isEmpty {

@@ -13,10 +13,11 @@ struct CardView: View {
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
     let card: Card
     @Binding var retryFailures : Bool
-    var removal: (() -> Void)? = nil
     @State private var feedback = UINotificationFeedbackGenerator()
     @State private var isShowingAnswer = false
-    @State private var offset = CGSize.zero
+    @Binding var lastAnswerCorrect : Bool
+    @State var offset = CGSize.zero
+    var removal: (() -> Void)? = nil
 
     var body: some View {
         ZStack {
@@ -75,6 +76,9 @@ struct CardView: View {
                         self.feedback.notificationOccurred(.error)
                     }
                     
+                    // day 91 - challenge 2. have to have a way to know if the answer way correct.
+                    self.lastAnswerCorrect = (self.offset.width > 0)
+                    
                     self.removal?()
                     
                     // day 91 - challenge 2
@@ -97,6 +101,6 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        CardView(card: Card.example, retryFailures: .constant(true))
+        CardView(card: Card.example, retryFailures: .constant(true), lastAnswerCorrect: .constant(false))
     }
 }
