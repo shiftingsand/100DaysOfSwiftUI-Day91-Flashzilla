@@ -7,8 +7,9 @@
 //
 
 import SwiftUI
+import CoreHaptics
 
-let startingTime = 100
+let startingTime = 15
 
 struct ContentView: View {
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
@@ -19,6 +20,8 @@ struct ContentView: View {
     @State private var cards = [Card]()
     @State private var timeRemaining = startingTime
     @State private var isActive = true
+    @State private var scaleAmount : CGFloat = 1
+    @State private var engine: CHHapticEngine?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -30,7 +33,7 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
-                    Text("Time: \(self.timeRemaining)")
+                    Text(self.timeRemaining > 0 ? "Time: \(self.timeRemaining)" : "Time's Up!")
                         .font(.largeTitle)
                         .foregroundColor(.white)
                         .padding(.horizontal, 20)
@@ -40,7 +43,9 @@ struct ContentView: View {
                                 .fill(Color.black)
                                 .opacity(0.75)
                     )
-                    
+                        .scaleEffect(CGFloat(self.timeRemaining > 0 ? 1 : self.scaleAmount))
+                        .animation(self.timeRemaining > 0 ? .none : .default)
+
                     ZStack {
                         ForEach(0..<self.cards.count, id: \.self) { index in
                             CardView(card: self.cards[index]) {
@@ -128,6 +133,15 @@ struct ContentView: View {
                 guard self.isActive else { return }
                 if self.timeRemaining > 0 {
                     self.timeRemaining -= 1
+                    // day 91 - challenge 1. added custom haptic
+                    if 0 == self.timeRemaining {
+                        self.timesUpShake()
+                    } else if 1 == self.timeRemaining {
+                        prepareHaptics()
+                    }
+                } else {
+                    // day 91 - challenge 1. animation for time's up
+                    self.scaleAmount = 2
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
@@ -156,7 +170,8 @@ struct ContentView: View {
     }
     
     func resetCards() {
-        timeRemaining = 100
+        scaleAmount = 1
+        timeRemaining = startingTime
         isActive = true
         loadData()
     }
@@ -166,6 +181,36 @@ struct ContentView: View {
             if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
                 self.cards = decoded
             }
+        }
+    }
+    
+    // code modified from hacking with swift
+    func timesUpShake() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        var events = [CHHapticEvent]()
+        
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 2)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 2)
+        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        events.append(event)
+
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription).")
+        }
+    }
+    
+    func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+
+        do {
+            self.engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            print("There was an error creating the engine: \(error.localizedDescription)")
         }
     }
 }
