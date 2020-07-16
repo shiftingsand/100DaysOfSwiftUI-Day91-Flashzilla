@@ -90,6 +90,9 @@ struct CardView: View {
                 } else {
                     self.offset = .zero
                 }
+                
+                // hide answers again after card swipes.
+                self.isShowingAnswer = false
             }
         )
         .onTapGesture {

@@ -9,7 +9,7 @@
 import SwiftUI
 import CoreHaptics
 
-let startingTime = 100
+let startingTime = 40
 
 struct ContentView: View {
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
